@@ -10,7 +10,7 @@ variables:
 
 before_script:
   - docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD $REGISTRY
-  - chmod +x ./scripts/*.sh
+  - chmod +x ./script/*.sh
 
 after_script:
   - docker container prune -f
@@ -30,8 +30,8 @@ build-master:
   only:
     - master
   script:
-    - ./scripts/build.sh master $REGISTRY $REGISTRY_NAMESPACE $APP1
-    - ./scripts/build.sh master $REGISTRY $REGISTRY_NAMESPACE $APP2
+    - ./script/build.sh master $REGISTRY $REGISTRY_NAMESPACE $APP1
+    - ./script/build.sh master $REGISTRY $REGISTRY_NAMESPACE $APP2
 
 # 部署测试版本
 deploy-develop:
@@ -42,8 +42,8 @@ deploy-develop:
   only:
     - master
   script:
-    - ./scripts/deploy.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP1 0.0.0.0 80
-    - ./scripts/deploy.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP2 0.0.0.0 81
+    - ./script/deploy.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP1 0.0.0.0 80
+    - ./script/deploy.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP2 0.0.0.0 81
 
 # 部署正式版本(手动执行)
 deploy-master:
@@ -54,5 +54,5 @@ deploy-master:
   only:
     - master
   script:
-    - ./scripts/deploy.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP1 0.0.0.0 80
-    - ./scripts/deploy.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP2 0.0.0.0 81
+    - ./script/deploy.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP1 0.0.0.0 80
+    - ./script/deploy.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP2 0.0.0.0 81

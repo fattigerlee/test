@@ -17,7 +17,7 @@ then
 	exit 1
 fi
 
-echo "${VERSION}" > ../../configs/${IMAGE_NAME}/VERSION
+echo "${VERSION}" > ../../config/${IMAGE_NAME}/VERSION
 
 #生成dockfile文件
 cat>Dockerfile<<EOF
