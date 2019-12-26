@@ -1,8 +1,8 @@
-package main
+package test_crypt
 
 import (
 	"fmt"
-	"test/test_crypt/crypt"
+	"test/internal/test_crypt/crypt"
 	"time"
 )
 
@@ -11,7 +11,7 @@ func main() {
 	fmt.Println(len(res), res)
 
 	data := []byte("我丢啊哈哈哈啊哈哈")
-	key := []byte("1234561234512345")
+	key := []byte("0e67f635e4bbeb74b7609def8dab6e6e")
 	enc := crypt.Encode(data, key)
 	fmt.Println("加密结果:", string(enc))
 

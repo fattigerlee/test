@@ -3,7 +3,7 @@
 set -e
 
 NAMESPACE=fattigerlee
-IMAGE_NAME=test_cicd
+IMAGE_NAME=login
 REGISTRY_URL=registry.cn-hangzhou.aliyuncs.com
 
 echo "构建镜像..."
