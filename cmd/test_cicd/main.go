@@ -78,6 +78,6 @@ func test3() {
 }
 
 func test4() {
-	str := "hello world"
+	str := "hello world,你好,世界!!!"
 	fmt.Println("data:", url.QueryEscape(str))
 }
