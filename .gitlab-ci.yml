@@ -42,8 +42,8 @@ deploy-develop:
   only:
     - master
   script:
-    - ./script/deploy_develop.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP1 0.0.0.0 80
-    - ./script/deploy_develop.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP2 0.0.0.0 81
+    - ./script/develop_run.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP1 0.0.0.0 80
+    - ./script/develop_run.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP2 0.0.0.0 81
 
 # 部署正式版本(手动执行)
 deploy-master:
@@ -54,5 +54,5 @@ deploy-master:
   only:
     - master
   script:
-    - ./script/deploy_develop.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP1 0.0.0.0 80
-    - ./script/deploy_develop.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP2 0.0.0.0 81
+    - ./script/develop_run.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP1 0.0.0.0 80
+    - ./script/develop_run.sh master $REGISTRY/$REGISTRY_NAMESPACE/$APP2 0.0.0.0 81
