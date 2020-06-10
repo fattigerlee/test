@@ -3,10 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/go-redis/redis/v7"
+	"log"
 	"sync"
 	"time"
 )
 
+// redis消息队列实现
 func main() {
 	rdb := redis.NewClient(&redis.Options{
 		Addr: "127.0.0.1:6379",
@@ -14,8 +16,7 @@ func main() {
 
 	_, err := rdb.Ping().Result()
 	if err != nil {
-		fmt.Println("redis连接失败!!!")
-		return
+		log.Fatal("redis连接失败!!!")
 	}
 	fmt.Println("redis连接成功!!!")
 

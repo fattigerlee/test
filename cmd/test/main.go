@@ -1,18 +1,27 @@
 package main
 
 import (
+	rand2 "crypto/rand"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"math"
 	"math/rand"
 	"net"
+	"net/http"
+	"net/url"
+	"os"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 )
 
 func main() {
 	//test01()
-	test02()
+	//test02()
 
 	//getAddress()
 	//
@@ -38,6 +47,17 @@ func main() {
 	//ParseUri(uri)
 	//
 	//testSort()
+
+	//test10()
+	//test11()
+	//test12()
+	//test13()
+	//test14()
+	//test15()
+	//test16()
+	//test17()
+	//test18()
+	test20()
 }
 
 // channel不关闭不会导致啥问题,但是如果这个对象在其他goroutine里被引用的话,这个goroutine就无法gc了,如果想要其他goroutine结束,你就close那个channel对象,其他goroutine会捕获一个关闭信号,然后退出就没事了
@@ -134,4 +154,243 @@ func getAddress() {
 			}
 		}
 	}
+}
+
+type S struct{}
+
+func (s S) F() {}
+
+type IF interface {
+	F()
+}
+
+func InitType() S {
+	var s S
+	return s
+}
+
+func InitPointer() *S {
+	var s *S
+	return s
+}
+func InitEfaceType() interface{} {
+	var s S
+	return s
+}
+
+func InitEfacePointer() interface{} {
+	var s *S
+	return s
+}
+
+func InitIfaceType() IF {
+	var s S
+	return s
+}
+
+func InitIfacePointer() IF {
+	var s *S
+	return s
+}
+
+func test10() {
+	s := []int{1, 2, 3}
+	ss := s[1:]
+	fmt.Printf("ss大小:%d ss:容量:%d\n", len(ss), cap(ss))
+	ss = append(ss, 4)
+	fmt.Printf("ss大小:%d ss:容量:%d\n", len(ss), cap(ss))
+
+	for _, v := range ss {
+		v += 10
+	}
+
+	for i := range ss {
+		ss[i] += 10
+	}
+
+	fmt.Println(s)
+}
+
+func test11() {
+	//println(InitType() == nil)
+	println(InitPointer() == nil)
+	a := InitEfaceType()
+	fmt.Println(a)
+	println(InitEfaceType() == nil)
+	println(InitEfacePointer() == nil)
+	println(InitIfaceType() == nil)
+	println(InitIfacePointer() == nil)
+}
+
+type SS struct {
+}
+
+func f(x interface{}) {
+}
+
+func g(x *interface{}) {
+}
+
+func test12() {
+	s := SS{}
+	p := &s
+
+	f(s) //A
+	//g(s) //B
+	f(p) //C
+	//g(p) //D
+}
+
+func test13() {
+	m := make(map[int]*int)
+
+	for i := 0; i < 3; i++ {
+		m[i] = &i //A
+	}
+
+	for _, v := range m {
+		print(*v)
+	}
+}
+
+func test14() {
+	f, err := os.Open("file")
+	if err != nil {
+		return
+	}
+	defer f.Close()
+
+	b, err := ioutil.ReadAll(f)
+	println(string(b))
+}
+
+func f1() {
+	defer println("f1-begin")
+	f2()
+	defer println("f1-end")
+}
+
+func f2() {
+	defer println("f2-begin")
+	f3()
+	defer println("f2-end")
+}
+
+func f3() {
+	defer println("f3-begin")
+	panic(0)
+	defer println("f3-end")
+}
+
+func test15() {
+	f1()
+}
+
+func test16() {
+	const N = 10
+
+	m := make(map[int]int)
+
+	wg := &sync.WaitGroup{}
+	mu := &sync.Mutex{}
+	wg.Add(N)
+	for i := 0; i < N; i++ {
+		go func() {
+			defer wg.Done()
+			mu.Lock()
+			m[i] = i
+			mu.Unlock()
+		}()
+	}
+	wg.Wait()
+	println(len(m))
+}
+
+type S1 struct{}
+
+func (s1 S1) f() {
+	fmt.Println("S1.f()")
+}
+func (s1 S1) g() {
+	fmt.Println("S1.g()")
+}
+
+type S2 struct {
+	S1
+}
+
+func (s2 S2) f() {
+	fmt.Println("S2.f()")
+}
+
+type I interface {
+	f()
+}
+
+func printType(i I) {
+	if s1, ok := i.(S1); ok {
+		s1.f()
+		s1.g()
+	}
+	if s2, ok := i.(S2); ok {
+		s2.f()
+		s2.g()
+	}
+}
+
+func test17() {
+	printType(S1{})
+	printType(S2{})
+}
+
+// 下载文件
+func test18() {
+	resp, err := http.PostForm("http://192.168.1.11:18888/download", url.Values{"skey": {"808a26bcb5a8b716a8abb20167300e15"}})
+	//resp, err := http.PostForm("http://47.75.51.226:18888/download", url.Values{"skey": {"808a26bcb5a8b716a8abb20167300e15"}})
+	//resp, err := http.PostForm("http://47.75.51.226:18888/download", url.Values{"skey": {"226d0f8c53060fa645074036ba046e8f"}})
+	if err != nil {
+		log.Fatal("下载文件失败,错误:", err)
+	}
+	defer resp.Body.Close()
+
+	now := time.Now()
+	var totalBuf []byte
+	var i int
+	for {
+		i++
+		buf := make([]byte, 32*1024)
+		n, err := resp.Body.Read(buf)
+		if n > 0 {
+			totalBuf = append(totalBuf, buf[0:n]...)
+		}
+
+		if err != nil {
+			break
+		}
+		//fmt.Printf("下载第%d次", i)
+	}
+	fmt.Printf("耗时:%.2fs", time.Since(now).Seconds())
+	//fmt.Println(string(totalBuf))
+}
+
+func test19() {
+	b := make([]byte, 16)
+	_, err := rand2.Read(b)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("value:", base64.StdEncoding.EncodeToString(b))
+}
+
+func test20() {
+	a := int(time.Hour / time.Millisecond)
+	fmt.Println("a:", a)
+
+	for i := 0; i < 10; i++ {
+		test19()
+	}
+}
+
+func test21() {
+	json.Marshal(nil)
 }
